@@ -1,8 +1,8 @@
+import axios from 'axios';
 import * as actions from './action-types';
 
 // ❗ You don't need to add extra action creators to achieve MVP
 export function moveClockwise() {
-  console.log("Move clockwise!");
   return ({ type: actions.MOVE_CLOCKWISE });
  }
 
@@ -10,11 +10,18 @@ export function moveCounterClockwise() {
   return ({ type: actions.MOVE_COUNTERCLOCKWISE });
 }
 
-export function selectAnswer() { }
+export function selectAnswer(answerId) { 
+  console.log("selectAnswer: ", answerId);
+  return ({ type: actions.SET_SELECTED_ANSWER, payload: answerId });
+}
 
-export function setMessage() { }
+export function setMessage(message) { 
+  return ({ type: actions.SET_INFO_MESSAGE, payload: message });
+}
 
-export function setQuiz() { }
+export function setQuiz(quiz) { 
+  return ({ type: actions.SET_QUIZ_INTO_STATE, payload: quiz });
+}
 
 export function inputChange() { }
 
@@ -24,12 +31,31 @@ export function resetForm() { }
 export function fetchQuiz() {
   return function (dispatch) {
     // First, dispatch an action to reset the quiz state (so the "Loading next quiz..." message can display)
+    dispatch(setQuiz(null));
+    
     // On successful GET:
     // - Dispatch an action to send the obtained quiz to its state
+    axios.get("http://localhost:9000/api/quiz/next")
+      .then(res => {
+        dispatch(setQuiz(res.data));
+      })
+      .catch(err => {
+        debugger
+      });
   }
 }
-export function postAnswer() {
+export function postAnswer(quiz_Id, answer_Id) {
   return function (dispatch) {
+    console.log("post answer");
+    axios.post("http://localhost:9000/api/quiz/answer", { "quiz_id": quiz_Id, "answer_id": answer_Id})
+      .then(res => {
+        dispatch(selectAnswer(null));
+        dispatch(setMessage(res.data.message));
+        dispatch(fetchQuiz());
+      })
+      .catch(err => {
+        debugger
+      })
     // On successful POST:
     // - Dispatch an action to reset the selected answer state
     // - Dispatch an action to set the server message to state
