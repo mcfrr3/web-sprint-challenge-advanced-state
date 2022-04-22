@@ -5,7 +5,6 @@ import { moveClockwise, moveCounterClockwise } from '../state/action-creators';
 
 const Wheel = (props) => {
   const wheelArray = [...Array(6)];
-  console.log("props: ", props);
   return (
     <div id="wrapper">
       <div id="wheel">
@@ -31,7 +30,6 @@ const Wheel = (props) => {
 }
 
 const mapStateToProps = state => {
-  console.log("mapStateToProps: ", state);
   return {
     wheel: state.wheel
   }
